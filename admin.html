@@ -26,15 +26,14 @@
         <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-white">Central Admin Panel</h1>
-                <p class="text-xs text-slate-400 mt-0.5">Approve student enrollments, manage teacher accounts.</p>
+                <p class="text-xs text-slate-400 mt-0.5">Approve student enrollments, manage teacher accounts, and terminate courses.</p>
                 
-                <!-- Navigation Shortcuts Panel -->
                 <div class="mt-3 flex flex-wrap gap-2">
                     <a href="user-management.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-cyan-500/10 cursor-pointer">
                         👥 Manage Users & Credentials
                     </a>
                     <a href="course-management.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-emerald-500/10 cursor-pointer">
-                        📚 Manage Courses & Analytics
+                        📚 Course Creation Wizard
                     </a>
                 </div>
             </div>
@@ -71,6 +70,23 @@
                 <p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Total Enrollments (Monthly)</p>
             </div>
         </div>
+
+        <section class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">📚 Course Catalog & System Registry</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 font-semibold">
+                            <th class="p-3 w-[75%]">Course System Name</th>
+                            <th class="p-3 text-right w-[25%]">System Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-courses" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="2" class="p-6 text-center text-slate-600 italic">Loading active catalog tracks...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
         <section class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
             <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">💳 Student Enrollment Approvals</h2>
@@ -112,7 +128,6 @@
 
     </main>
 
-    <!-- Bank Slip Modal Viewport -->
     <div id="slip-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 relative shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -135,7 +150,7 @@
 
         let allEnrollments = [];
         let allTeachers = [];
-        let detectedCourses = new Set();
+        let cachedRawCoursesSnapshot = {};
 
         function adminLogout() {
             sessionStorage.clear();
@@ -152,17 +167,12 @@
         }
 
         function startRealtimeListeners() {
-            // Load courses catalog dynamically first to configure options map
             getDatabase().ref('lms_courses').on('value', (courseCatalogSnap) => {
-                detectedCourses.clear();
-                courseCatalogSnap.forEach((c) => {
-                    detectedCourses.add(c.val().name);
-                });
-                updateCourseDropdown();
+                cachedRawCoursesSnapshot = courseCatalogSnap.val() || {};
+                updateCourseDropdownAndTable();
                 filterData();
             });
 
-            // Listen into standard enrollment submissions data node
             getDatabase().ref('enrollments').on('value', (snapshot) => {
                 allEnrollments = [];
                 snapshot.forEach((courseSnap) => {
@@ -177,7 +187,6 @@
                 filterData();
             });
 
-            // Listen into standard registration applications map
             getDatabase().ref('users/teachers').on('value', (snapshot) => {
                 allTeachers = [];
                 snapshot.forEach((snap) => {
@@ -190,20 +199,66 @@
             });
         }
 
-        function updateCourseDropdown() {
+        function updateCourseDropdownAndTable() {
             const select = document.getElementById('filter-course');
+            const courseTableBody = document.getElementById('table-courses');
             const currentSelected = select.value;
             
             select.innerHTML = '<option value="ALL">-- All Courses --</option>';
-            detectedCourses.forEach(courseName => {
+            courseTableBody.innerHTML = '';
+
+            const coursesEntries = Object.entries(cachedRawCoursesSnapshot);
+
+            if (coursesEntries.length === 0) {
+                courseTableBody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-600 italic">No courses currently available in system registry database node.</td></tr>`;
+                return;
+            }
+
+            coursesEntries.forEach(([dbPushKey, courseData]) => {
+                const courseName = courseData.name;
+                
                 const opt = document.createElement('option');
                 opt.value = courseName;
                 opt.textContent = courseName;
                 select.appendChild(opt);
+
+                const computedClassroomPathKey = btoa(encodeURIComponent(courseName.trim())).replace(/[^a-zA-Z0-9]/g, '_');
+
+                // FIXED: Completely removed the long database key column to give a premium workspace clean look
+                courseTableBody.innerHTML += `
+                <tr class="text-slate-300 hover:bg-slate-950/40 transition-colors">
+                    <td class="p-3 font-semibold text-white text-xs">📚 ${courseName}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="purgeWholeCourseStructure('${dbPushKey}', '${computedClassroomPathKey}', '${courseName}')" 
+                                class="bg-rose-500/10 hover:bg-rose-600 border border-rose-500/20 text-rose-400 hover:text-white font-bold px-3 py-1 rounded text-[11px] cursor-pointer transition-all">
+                            🗑️ Delete Course
+                        </button>
+                    </td>
+                </tr>`;
             });
 
-            if([...detectedCourses].includes(currentSelected)) {
+            if(select.querySelector(`option[value="${currentSelected}"]`)) {
                 select.value = currentSelected;
+            }
+        }
+
+        function purgeWholeCourseStructure(catalogKey, classroomKey, courseName) {
+            const promptText = `Are you completely sure you want to PERMANENTLY PURGE the course "${courseName}"?\n\nThis will completely delete:\n1. The Course Details Catalog\n2. All related Classroom streams, Notes, Exams and Handouts.\n\nType "DELETE" down below to confirm execution:`;
+            
+            const confirmation = prompt(promptText);
+            if (confirmation === "DELETE") {
+                getDatabase().ref(`lms_courses/${catalogKey}`).remove()
+                .then(() => {
+                    return getDatabase().ref(`classroom/${classroomKey}`).remove();
+                })
+                .then(() => {
+                    alert(`✓ Course "${courseName}" and all associated data maps wiped completely out of system cloud modules successfully.`);
+                })
+                .catch((err) => {
+                    alert(`System exception during node execution parameters drop loop sequence: ${err.message}`);
+                });
+            } else if (confirmation !== null) {
+                alert("❌ Verification mismatch matrix failed! Purge execution cancelled safely.");
             }
         }
 
