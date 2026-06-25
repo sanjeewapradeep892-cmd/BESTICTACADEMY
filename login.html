@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEST ICT ACADEMY - Login Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between" onload="initLoginPortal()">
+
+    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">📘</span>
+            <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">BEST ICT ACADEMY</span>
+        </div>
+        <a href="index.html" class="text-xs text-slate-400 hover:text-white">← Back to Home</a>
+    </nav>
+
+    <div class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md p-8 rounded-2xl shadow-2xl space-y-6">
+
+            <div class="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-xl text-xs text-center">
+                <button type="button" id="btn-login-tab" onclick="toggleView('login')" class="py-2 rounded-lg cursor-pointer bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-bold">Sign In</button>
+                <button type="button" id="btn-register-tab" onclick="toggleView('register')" class="py-2 rounded-lg cursor-pointer text-slate-400 hover:text-white transition-colors">Register</button>
+            </div>
+
+            <form id="form-signin" onsubmit="handleSignIn(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-400">Select Portal Role</label>
+                    <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-lg text-[11px] font-bold text-center">
+                        <div id="role-stu" onclick="setLoginRole('student')" class="py-1.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-pointer">Student</div>
+                        <div id="role-tea" onclick="setLoginRole('teacher')" class="py-1.5 rounded text-slate-400 cursor-pointer hover:text-white transition-colors">Teacher</div>
+                        <div id="role-adm" onclick="setLoginRole('admin')" class="py-1.5 rounded text-slate-400 cursor-pointer hover:text-white transition-colors">Admin</div>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label id="lbl-signin-user" class="text-xs font-medium text-slate-400">Email Address</label>
+                    <input type="email" id="signin-user" required placeholder="your@email.com"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-emerald-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-400">Password</label>
+                    <input type="password" id="signin-pass" required placeholder="••••••••"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-emerald-500 transition-colors">
+                </div>
+                <div id="signin-error" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2"></div>
+                <button type="submit" id="signin-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs tracking-wide transition-colors cursor-pointer">
+                    Secure Authenticate →
+                </button>
+            </form>
+
+            <form id="form-register" onsubmit="handleRegistration(event)" class="space-y-4 hidden">
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-400">Account Registration Type</label>
+                    <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-lg text-[11px] font-bold text-center">
+                        <button type="button" id="reg-tab-stu" onclick="setRegType('student')" class="py-1.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-pointer">Student</button>
+                        <button type="button" id="reg-tab-tea" onclick="setRegType('teacher')" class="py-1.5 rounded text-slate-400 cursor-pointer hover:text-white transition-colors">Teacher</button>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-400">Full Name</label>
+                    <input type="text" id="reg-name" required placeholder="Kasun Perera"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-emerald-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-400">Email Address</label>
+                    <input type="email" id="reg-email" required placeholder="your@email.com"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-emerald-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-400">Password</label>
+                    <input type="password" id="reg-pass" required placeholder="Min 6 characters"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-emerald-500 transition-colors">
+                </div>
+
+                <div id="box-teacher-course" class="space-y-1 hidden">
+                    <label class="text-xs font-medium text-slate-400">Assigned Lecture Course</label>
+                    <select id="reg-course" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 outline-none focus:border-emerald-500">
+                        <option value="">-- Loading Available Courses... --</option>
+                    </select>
+                    <p class="text-[10px] text-amber-400 mt-1">⏳ Teacher accounts need Admin approval before login.</p>
+                </div>
+
+                <div id="register-error" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2"></div>
+                <button type="submit" id="register-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs tracking-wide transition-colors cursor-pointer">
+                    Submit Registration →
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <footer class="text-center text-slate-600 text-xs py-4">© 2026 BEST ICT ACADEMY</footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        let signinRole = 'student';
+        let registrationType = 'student';
+        const getDatabase = () => typeof db !== 'undefined' ? db : firebase.database();
+
+        function initLoginPortal() {
+            startLiveCourseListener();
+        }
+
+        // 🔄 Realtime Course Listener Engine එකක් එකතු කිරීම
+        function startLiveCourseListener() {
+            getDatabase().ref('lms_courses').on('value', (snapshot) => {
+                const selectDropdown = document.getElementById('reg-course');
+                selectDropdown.innerHTML = '<option value="">-- Select Assigned Course --</option>';
+
+                if (!snapshot.exists()) {
+                    selectDropdown.innerHTML = '<option value="">No courses configured by admin</option>';
+                    return;
+                }
+
+                snapshot.forEach((childSnap) => {
+                    const course = childSnap.val();
+                    const option = document.createElement('option');
+                    option.value = course.name;
+                    option.textContent = course.name;
+                    selectDropdown.appendChild(option);
+                });
+            });
+        }
+
+        function toggleView(view) {
+            const isLogin = view === 'login';
+            document.getElementById('btn-login-tab').className = isLogin
+                ? "py-2 rounded-lg cursor-pointer bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-bold"
+                : "py-2 rounded-lg cursor-pointer text-slate-400 hover:text-white transition-colors";
+            document.getElementById('btn-register-tab').className = !isLogin
+                ? "py-2 rounded-lg cursor-pointer bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-bold"
+                : "py-2 rounded-lg cursor-pointer text-slate-400 hover:text-white transition-colors";
+            document.getElementById('form-signin').classList.toggle('hidden', !isLogin);
+            document.getElementById('form-register').classList.toggle('hidden', isLogin);
+        }
+
+        function setLoginRole(role) {
+            signinRole = role;
+            ['student','teacher','admin'].forEach(r => {
+                const el = document.getElementById('role-' + r.slice(0,3));
+                el.className = r === role
+                    ? "py-1.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-pointer"
+                    : "py-1.5 rounded text-slate-400 cursor-pointer hover:text-white transition-colors";
+            });
+            document.getElementById('lbl-signin-user').innerText =
+                role === 'admin' ? "Admin Email" : role === 'teacher' ? "Teacher Email" : "Student Email";
+        }
+
+        function setRegType(type) {
+            registrationType = type;
+            ['student','teacher'].forEach(r => {
+                const el = document.getElementById('reg-tab-' + r.slice(0,3));
+                el.className = r === type
+                    ? "py-1.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-pointer"
+                    : "py-1.5 rounded text-slate-400 cursor-pointer hover:text-white transition-colors";
+            });
+            document.getElementById('box-teacher-course').classList.toggle('hidden', type !== 'teacher');
+        }
+
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+        function hideError(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = loading;
+            btn.textContent = loading ? 'Please wait...' : (btnId === 'signin-btn' ? 'Secure Authenticate →' : 'Submit Registration →');
+        }
+
+        function handleRegistration(e) {
+            e.preventDefault();
+            hideError('register-error');
+            const name  = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const pass  = document.getElementById('reg-pass').value;
+            const cleanEmail = email.replace(/\./g, ',');
+
+            if (pass.length < 6) { showError('register-error', 'Password must be at least 6 characters.'); return; }
+
+            setLoading('register-btn', true);
+
+            if (registrationType === 'student') {
+                getDatabase().ref('users/students/' + cleanEmail).once('value').then(snap => {
+                    if (snap.exists()) {
+                        showError('register-error', 'This email is already registered. Please sign in.');
+                        setLoading('register-btn', false);
+                        return;
+                    }
+                    getDatabase().ref('users/students/' + cleanEmail).set({ name, email, pass }, err => {
+                        setLoading('register-btn', false);
+                        if (err) { showError('register-error', 'Error: ' + err.message); return; }
+                        alert('✅ Account created! You can now Sign In as a Student.');
+                        e.target.reset();
+                        toggleView('login');
+                    });
+                });
+            } else {
+                const course = document.getElementById('reg-course').value;
+                if (!course) {
+                    showError('register-error', 'Please select an assigned lecture course structure.');
+                    setLoading('register-btn', false);
+                    return;
+                }
+                getDatabase().ref('users/teachers/' + cleanEmail).once('value').then(snap => {
+                    if (snap.exists()) {
+                        showError('register-error', 'This email is already registered.');
+                        setLoading('register-btn', false);
+                        return;
+                    }
+                    getDatabase().ref('users/teachers/' + cleanEmail).set({
+                        name, email, pass, course, status: 'Pending'
+                    }, err => {
+                        setLoading('register-btn', false);
+                        if (err) { showError('register-error', 'Error: ' + err.message); return; }
+                        alert('✅ Teacher application submitted! Please wait for Admin approval.');
+                        e.target.reset();
+                        toggleView('login');
+                    });
+                });
+            }
+        }
+
+        function handleSignIn(e) {
+            e.preventDefault();
+            hideError('signin-error');
+            const email = document.getElementById('signin-user').value.trim().toLowerCase();
+            const pass  = document.getElementById('signin-pass').value;
+            const cleanEmail = email.replace(/\./g, ',');
+
+            setLoading('signin-btn', true);
+
+            if (signinRole === 'admin') {
+                setLoading('signin-btn', false);
+                if (email === 'admin@bestict.com' && pass === 'admin1234') {
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                    window.location.href = 'admin.html';
+                    return;
+                }
+                getDatabase().ref('users/admins/' + cleanEmail).once('value').then(snap => {
+                    const data = snap.val();
+                    if (!data || data.pass !== pass) { showError('signin-error', '❌ Invalid admin credentials.'); setLoading('signin-btn', false); return; }
+                    if (data.status !== 'Approved') { showError('signin-error', '⏳ Admin access pending approval.'); setLoading('signin-btn', false); return; }
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                    window.location.href = 'admin.html';
+                });
+                return;
+            }
+
+            if (signinRole === 'student') {
+                getDatabase().ref('users/students/' + cleanEmail).once('value').then(snap => {
+                    setLoading('signin-btn', false);
+                    const data = snap.val();
+                    if (!data || data.pass !== pass) { showError('signin-error', '❌ Invalid email or password.'); return; }
+                    sessionStorage.setItem('currentStudentName', data.name);
+                    sessionStorage.setItem('currentStudentEmail', data.email);
+                    window.location.href = 'dashboard.html';
+                });
+                return;
+            }
+
+            if (signinRole === 'teacher') {
+                getDatabase().ref('users/teachers/' + cleanEmail).once('value').then(snap => {
+                    setLoading('signin-btn', false);
+                    const data = snap.val();
+                    if (!data || data.pass !== pass) { showError('signin-error', '❌ Invalid email or password.'); return; }
+                    if (data.status !== 'Approved') { showError('signin-error', '⏳ Your account is pending Admin approval.'); return; }
+                    sessionStorage.setItem('currentTeacherName', data.name);
+                    sessionStorage.setItem('currentTeacherEmail', data.email);
+                    sessionStorage.setItem('currentTeacherCourse', data.course);
+                    window.location.href = 'teacher.html';
+                });
+            }
+        }
+    </script>
+</body>
+</html>

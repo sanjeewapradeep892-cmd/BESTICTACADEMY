@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEST ICT ACADEMY - Teacher Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-section { display: none; }
+        .tab-section.active { display: grid; }
+        .preview-section { display: none; }
+        .preview-section.active { display: block; }
+        .student-tab-section { display: none; }
+        .student-tab-section.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col" onload="initTeacher()">
+
+    <!-- NAV BAR -->
+    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex justify-between items-center sticky top-0 z-40">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">📘</span>
+            <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">BEST ICT ACADEMY</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="text-right hidden md:block">
+                <p id="nav-teacher-name" class="text-xs font-semibold text-white">Teacher</p>
+                <p id="nav-teacher-course" class="text-[10px] text-cyan-400">Loading course...</p>
+            </div>
+            <button onclick="logout()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition-colors cursor-pointer">Logout</button>
+        </div>
+    </nav>
+
+    <!-- MAIN TEACHER PANEL -->
+    <main id="main-teacher-panel" class="container mx-auto px-6 py-8 flex-grow space-y-6">
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 gap-4">
+            <div>
+                <h1 id="teacher-welcome" class="text-2xl font-bold text-white">Welcome, Teacher</h1>
+                <p id="teacher-course-badge" class="text-xs text-slate-400 mt-1">Assigned Portfolio: Loading...</p>
+            </div>
+            <button onclick="toggleStudentPreview(true)" class="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg cursor-pointer">
+                👁️ Live Student Mode Preview
+            </button>
+        </div>
+
+        <div id="save-status" class="hidden fixed top-20 right-6 z-50 bg-emerald-500 text-slate-950 font-bold text-xs px-4 py-2 rounded-full shadow-lg">
+            ✅ Database Entry Uploaded Successfully!
+        </div>
+
+        <!-- TABS BUTTONS -->
+        <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+            <button id="btn-zoom" onclick="switchTab('zoom')" class="tab-btn bg-cyan-500 text-slate-950 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all">📹 Live Zoom Sessions</button>
+            <button id="btn-pdf" onclick="switchTab('pdf')" class="tab-btn bg-slate-900 text-slate-400 border border-slate-800 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all">📚 Documents</button>
+            <button id="btn-written" onclick="switchTab('written')" class="tab-btn bg-slate-900 text-slate-400 border border-slate-800 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all">📜 Exam Papers & Marking</button>
+            <button id="btn-recordings" onclick="switchTab('recordings')" class="tab-btn bg-slate-900 text-slate-400 border border-slate-800 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all">🎬 Video Lessons</button>
+            <button id="btn-announcements" onclick="switchTab('announcements')" class="tab-btn bg-slate-900 text-slate-400 border border-slate-800 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all">📢 Announcements</button>
+            <button id="btn-timetable" onclick="switchTab('timetable')" class="tab-btn bg-slate-900 text-slate-400 border border-slate-800 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all">📅 Timetable</button>
+        </div>
+
+        <!-- ZOOM TAB -->
+        <div id="tab-zoom" class="tab-section active lg:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 h-fit">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-white">Schedule Live Session</h2>
+                <form onsubmit="saveZoom(event)" class="space-y-3">
+                    <input type="text" id="zoom-topic" placeholder="Session Topic" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500">
+                    <input type="datetime-local" id="zoom-date" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-400 focus:border-cyan-500">
+                    <input type="url" id="zoom-link" placeholder="Zoom Meeting URL" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500">
+                    <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2 rounded-lg text-xs cursor-pointer transition-colors">Form Publish Session</button>
+                </form>
+            </div>
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Scheduled Sessions Registry</h2>
+                <div id="zoom-list" class="space-y-2 text-xs text-slate-500 italic">Loading active streams...</div>
+            </div>
+        </div>
+
+        <!-- DOCUMENTS TAB -->
+        <div id="tab-pdf" class="tab-section lg:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 h-fit">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-white">Upload Document Asset</h2>
+                <form onsubmit="uploadPdf(event)" class="space-y-3">
+                    <input type="text" id="pdf-title" placeholder="Document Title Descriptor" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-emerald-500">
+                    <select id="pdf-category" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 focus:border-emerald-500">
+                        <option value="Notes">📚 Class Handout Notes</option>
+                        <option value="PastPapers">📜 Past Papers Archives</option>
+                        <option value="ModelPapers">🎯 Model Evaluation Papers</option>
+                    </select>
+                    <input type="file" id="pdf-file" accept=".pdf,image/*" required class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:bg-slate-800 file:text-slate-200 cursor-pointer">
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2 rounded-lg text-xs cursor-pointer transition-colors">Commit Upload Asset</button>
+                </form>
+            </div>
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Document Central Vault</h2>
+                <div class="grid sm:grid-cols-3 gap-4 text-xs">
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
+                        <p class="font-bold text-cyan-400 text-sm border-b border-slate-800 pb-1">Notes</p>
+                        <div id="vault-notes" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
+                        <p class="font-bold text-amber-400 text-sm border-b border-slate-800 pb-1">Past Papers</p>
+                        <div id="vault-past" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
+                        <p class="font-bold text-emerald-400 text-sm border-b border-slate-800 pb-1">Model Papers</p>
+                        <div id="vault-model" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXAMS TAB -->
+        <div id="tab-written" class="tab-section lg:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 h-fit">
+                <h2 class="text-xs font-bold text-rose-400 uppercase tracking-wider">Publish Online Exam Paper</h2>
+                <form onsubmit="publishPaper(event)" class="space-y-3">
+                    <input type="text" id="paper-title" placeholder="Exam Structure Title" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-rose-500">
+                    <input type="file" id="paper-file" accept=".pdf,image/*" required class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:bg-slate-800 file:text-slate-300 rounded">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="date" id="paper-start-date" required class="bg-slate-950 border border-slate-800 text-xs p-2 text-white rounded">
+                        <input type="time" id="paper-start-time" required class="bg-slate-950 border border-slate-800 text-xs p-2 text-white rounded">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="date" id="paper-deadline-date" required class="bg-slate-950 border border-slate-800 text-xs p-2 text-white rounded">
+                        <input type="time" id="paper-deadline-time" required class="bg-slate-950 border border-slate-800 text-xs p-2 text-white rounded">
+                    </div>
+                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 rounded-lg text-xs cursor-pointer transition-colors">📤 Publish Assignment</button>
+                </form>
+            </div>
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Published Papers</h2>
+                    <div id="papers-list" class="space-y-3 text-xs"></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3">
+                    <h2 class="text-xs font-bold text-amber-400 uppercase tracking-wider">📥 Student Scripts Submission & Marking Portal</h2>
+                    <div id="teacher-submissions-list" class="space-y-4 text-xs">
+                        <p class="text-slate-600 italic">No incoming student files discovered yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECORDINGS TAB -->
+        <div id="tab-recordings" class="tab-section lg:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 h-fit">
+                <h2 class="text-xs font-bold text-purple-400 uppercase tracking-wider">Add Archive Video Recording</h2>
+                <form onsubmit="saveRecording(event)" class="space-y-3">
+                    <input type="text" id="rec-title" placeholder="Lesson Structure Title" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-purple-500">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="date" id="rec-date" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-400 focus:border-purple-500">
+                        <select id="rec-month" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-300">
+                            <option value="January">January</option><option value="February">February</option>
+                            <option value="March">March</option><option value="April">April</option>
+                            <option value="May">May</option><option value="June">June</option>
+                            <option value="July">July</option><option value="August">August</option>
+                            <option value="September">September</option><option value="October">October</option>
+                            <option value="November">November</option><option value="December">December</option>
+                        </select>
+                    </div>
+                    <select id="rec-platform" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300">
+                        <option value="YouTube">🎥 YouTube Video Link</option>
+                        <option value="Vimeo">📽️ Vimeo Video Engine</option>
+                        <option value="Drive">🔗 Google Drive Storage Link</option>
+                    </select>
+                    <input type="url" id="rec-url" placeholder="Video Portal Destination URL" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-purple-500">
+                    <button type="submit" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 rounded-lg text-xs cursor-pointer transition-colors">🎬 Inject Archive Replay</button>
+                </form>
+            </div>
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Uploaded Lessons Vault</h2>
+                <div id="recordings-list" class="space-y-2 text-xs text-slate-500 italic">Loading video streams...</div>
+            </div>
+        </div>
+
+        <!-- ANNOUNCEMENTS TAB -->
+        <div id="tab-announcements" class="tab-section lg:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 h-fit">
+                <h2 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Create Announcement Notice</h2>
+                <form onsubmit="saveAnnouncement(event)" class="space-y-3">
+                    <input type="text" id="ann-title" placeholder="Announcement Heading" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-amber-500">
+                    <select id="ann-severity" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300">
+                        <option value="General Notice">🟢 Standard General Notice</option>
+                        <option value="Urgent/Critical">🔴 Critical Urgent Alert</option>
+                    </select>
+                    <textarea id="ann-message" placeholder="Write bulletin board notification description message here..." required rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white resize-none outline-none focus:border-amber-500"></textarea>
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg text-xs cursor-pointer transition-colors">📢 Broadcast Notice Feed</button>
+                </form>
+            </div>
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Broadcast History Feed</h2>
+                <div id="announcements-list" class="space-y-2 text-xs text-slate-500 italic">Loading active bulletins...</div>
+            </div>
+        </div>
+
+        <!-- TIMETABLE TAB -->
+        <div id="tab-timetable" class="tab-section lg:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4 h-fit">
+                <h2 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Add Schedule Timetable Entry</h2>
+                <form onsubmit="saveTimetable(event)" class="space-y-3">
+                    <select id="tt-day" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300">
+                        <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option><option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                    <input type="text" id="tt-time" placeholder="e.g. 08:30 PM - 10:30 PM" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
+                    <input type="text" id="tt-topic" placeholder="Lesson/Unit Target Module Descriptor" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg text-xs cursor-pointer transition-colors">📅 Inject into Timetable</button>
+                </form>
+            </div>
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-3">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Calendar Registry</h2>
+                <div id="timetable-list" class="space-y-2 text-xs text-slate-500 italic">Loading class schedules...</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- LIVE STUDENT PREVIEW CONTAINER -->
+    <div id="student-preview-container" class="preview-section bg-slate-950 min-h-screen w-full hidden z-50 relative pb-12">
+        <div class="bg-rose-500/10 border-b border-rose-500/20 px-6 py-2 flex justify-between items-center text-xs">
+            <span class="text-rose-400 font-bold flex items-center gap-1.5">🎬 Live Sandbox Viewport - Student UI Experience Mode Active</span>
+            <button onclick="toggleStudentPreview(false)" class="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 font-bold rounded-md cursor-pointer">Exit Preview Mode ❌</button>
+        </div>
+        
+        <!-- Urgent Alert Header Ticker for Students -->
+        <div id="student-critical-alert-ticker" class="container mx-auto px-6 pt-4 hidden"></div>
+
+        <div id="student-preview-target"></div>
+    </div>
+
+    <!-- FIREBASE AND BACKEND SCRIPT ENGINES -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        const getDatabase = () => typeof db !== 'undefined' ? db : firebase.database();
+        let teacherName, teacherEmail, teacherCourse, courseKey;
+        let cachedSandboxData = {};
+
+        function initTeacher() {
+            teacherName = sessionStorage.getItem('currentTeacherName');
+            teacherEmail = sessionStorage.getItem('currentTeacherEmail');
+            teacherCourse = sessionStorage.getItem('currentTeacherCourse');
+
+            if (!teacherName || !teacherCourse) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // FIXED: Added .trim() to ensure no spacing discrepancies break sync mapping
+            courseKey = btoa(encodeURIComponent(teacherCourse.trim())).replace(/[^a-zA-Z0-9]/g, '_');
+
+            document.getElementById('nav-teacher-name').textContent = teacherName;
+            document.getElementById('nav-teacher-course').textContent = teacherCourse;
+            document.getElementById('teacher-welcome').textContent = `Welcome, ${teacherName}`;
+            document.getElementById('teacher-course-badge').textContent = `Assigned Portfolio: ${teacherCourse}`;
+
+            listenToClassroomData();
+        }
+
+        function flashSaveStatus() {
+            const el = document.getElementById('save-status');
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3500);
+        }
+
+        function pushData(childNode, payload, optionalFormEl = null) {
+            getDatabase().ref(`classroom/${courseKey}/${childNode}`).push(payload, (err) => {
+                if (!err) {
+                    flashSaveStatus();
+                    if(optionalFormEl) optionalFormEl.reset();
+                } else {
+                    alert('Database sync transaction fault: ' + err.message);
+                }
+            });
+        }
+
+        function deleteData(childNode, itemKey) {
+            if(confirm('⚠️ Are you completely sure you want to permanently delete this asset record from class architecture node?')) {
+                getDatabase().ref(`classroom/${courseKey}/${childNode}/${itemKey}`).remove((err) => {
+                    if(!err) flashSaveStatus();
+                });
+            }
+        }
+
+        function listenToClassroomData() {
+            getDatabase().ref(`classroom/${courseKey}`).on('value', (snap) => {
+                const data = snap.val() || {};
+                cachedSandboxData = data; 
+                
+                renderZoom(data.zoom || {});
+                renderPdf(data.pdf || {});
+                renderPapers(data.papers || {});
+                renderRecordings(data.recordings || {});
+                renderAnnouncements(data.announcements || {});
+                renderTimetable(data.timetable || {});
+
+                if(document.getElementById('student-preview-container').classList.contains('active')) {
+                    injectStudentSandboxData(data);
+                }
+            });
+        }
+
+        function saveZoom(e) {
+            e.preventDefault();
+            pushData('zoom', {
+                topic: document.getElementById('zoom-topic').value,
+                dateTime: document.getElementById('zoom-date').value,
+                link: document.getElementById('zoom-link').value
+            }, e.target);
+        }
+
+        function uploadPdf(e) {
+            e.preventDefault();
+            const file = document.getElementById('pdf-file').files[0];
+            if (!file) return;
+            const r = new FileReader();
+            r.onload = function(evt) {
+                pushData('pdf', {
+                    title: document.getElementById('pdf-title').value,
+                    category: document.getElementById('pdf-category').value,
+                    filename: file.name,
+                    fileData: evt.target.result
+                }, e.target);
+            };
+            r.readAsDataURL(file);
+        }
+
+        function publishPaper(e) {
+            e.preventDefault();
+            const file = document.getElementById('paper-file').files[0];
+            if (!file) return;
+            const r = new FileReader();
+            r.onload = function(evt) {
+                pushData('papers', {
+                    title: document.getElementById('paper-title').value,
+                    start: document.getElementById('paper-start-date').value + 'T' + document.getElementById('paper-start-time').value,
+                    deadline: document.getElementById('paper-deadline-date').value + 'T' + document.getElementById('paper-deadline-time').value,
+                    filename: file.name,
+                    fileData: evt.target.result
+                }, e.target);
+            };
+            r.readAsDataURL(file);
+        }
+
+        function saveRecording(e) {
+            e.preventDefault();
+            pushData('recordings', {
+                title: document.getElementById('rec-title').value,
+                uploadDate: document.getElementById('rec-date').value,
+                targetMonth: document.getElementById('rec-month').value,
+                platform: document.getElementById('rec-platform').value,
+                url: document.getElementById('rec-url').value
+            }, e.target);
+        }
+
+        function saveAnnouncement(e) {
+            e.preventDefault();
+            pushData('announcements', {
+                title: document.getElementById('ann-title').value,
+                severity: document.getElementById('ann-severity').value,
+                message: document.getElementById('ann-message').value,
+                timestamp: new Date().toISOString()
+            }, e.target);
+        }
+
+        function saveTimetable(e) {
+            e.preventDefault();
+            pushData('timetable', {
+                day: document.getElementById('tt-day').value,
+                time: document.getElementById('tt-time').value,
+                topic: document.getElementById('tt-topic').value
+            }, e.target);
+        }
+
+        function renderZoom(zoom) {
+            const list = document.getElementById('zoom-list');
+            const entries = Object.entries(zoom);
+            if (!entries.length) { list.innerHTML = '<p class="text-slate-600 italic">No scheduled live streams inside this classroom batch.</p>'; return; }
+            list.innerHTML = '';
+            entries.forEach(([key, z]) => {
+                list.innerHTML += `<div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center"><div><span class="font-bold text-cyan-400">📹 ${z.topic}</span> <span class="text-slate-500 text-[11px]">(${new Date(z.dateTime).toLocaleString()})</span></div><button onclick="deleteData('zoom','${key}')" class="text-rose-400 text-xs hover:text-rose-500 cursor-pointer">🗑️</button></div>`;
+            });
+        }
+
+        function renderPdf(pdf) {
+            const notes = document.getElementById('vault-notes');
+            const past = document.getElementById('vault-past');
+            const model = document.getElementById('vault-model');
+            notes.innerHTML = past.innerHTML = model.innerHTML = '<p class="text-slate-600 italic text-[11px]">No documents found.</p>';
+            let cn = 0, cp = 0, cm = 0;
+            Object.entries(pdf).forEach(([key, p]) => {
+                const block = `<div class="bg-slate-900 p-2 rounded border border-slate-800 flex justify-between items-center gap-1"><span class="truncate text-slate-400 text-[11px]">${p.title}</span><button onclick="deleteData('pdf','${key}')" class="text-rose-400 text-[11px] font-bold cursor-pointer">🗑</button></div>`;
+                if(p.category === 'Notes') { if(cn===0) notes.innerHTML = ''; notes.innerHTML += block; cn++; }
+                if(p.category === 'PastPapers') { if(cp===0) past.innerHTML = ''; past.innerHTML += block; cp++; }
+                if(p.category === 'ModelPapers') { if(cm===0) model.innerHTML = ''; model.innerHTML += block; cm++; }
+            });
+        }
+
+        function renderPapers(papers) {
+            const list = document.getElementById('papers-list');
+            const subsList = document.getElementById('teacher-submissions-list');
+            const entries = Object.entries(papers);
+            if (!entries.length) { list.innerHTML = '<p class="text-slate-600 italic">No exams published.</p>'; subsList.innerHTML = '<p class="text-slate-600 italic">No incoming student scripts registry available.</p>'; return; }
+            list.innerHTML = ''; subsList.innerHTML = '';
+            let hasIncoming = false;
+            entries.forEach(([paperId, p]) => {
+                list.innerHTML += `<div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center"><div><span class="font-bold text-rose-400">📜 ${p.title}</span></div><button onclick="deleteData('papers','${paperId}')" class="text-rose-400 text-xs font-bold cursor-pointer">🗑 Delete</button></div>`;
+                if(p.submissions) {
+                    Object.entries(p.submissions).forEach(([studentCleanKey, sub]) => {
+                        hasIncoming = true;
+                        let widget = sub.evaluated ? `<div class="mt-2 text-[11px] bg-emerald-500/10 text-emerald-400 p-2 rounded-lg">Graded completed ✓ Score: ${sub.marks}% <p class="text-slate-400 italic text-[10px] mt-0.5">Remarks: "${sub.remarks}"</p></div>` : `<form onsubmit="evaluateStudentPaper(event, '${paperId}', '${studentCleanKey}')" class="mt-3 grid grid-cols-3 gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800"><input type="number" id="marks-${paperId}-${studentCleanKey}" placeholder="Marks %" max="100" min="0" required class="bg-slate-900 border border-slate-800 p-1 text-xs rounded text-white"><input type="text" id="remarks-${paperId}-${studentCleanKey}" placeholder="Remarks" required class="bg-slate-900 border border-slate-800 p-1 text-xs rounded text-white col-span-2"><button type="submit" class="col-span-3 bg-amber-500 text-slate-950 font-bold py-1 rounded text-[11px]">Submit Score</button></form>`;
+                        subsList.innerHTML += `<div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2"><div class="flex justify-between items-start"><div><h4 class="font-bold text-slate-200 text-xs">${sub.studentName}</h4><p class="text-[10px] text-slate-400">Paper: ${p.title}</p></div><button onclick="downloadFile('${sub.fileData}', '${sub.filename}')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 px-2 py-1 rounded text-[10px] cursor-pointer">📥 Open Script</button></div>${widget}</div>`;
+                    });
+                }
+            });
+            if(!hasIncoming) subsList.innerHTML = '<p class="text-slate-600 italic">No incoming student answer sheets received inside portal parameters.</p>';
+        }
+
+        function evaluateStudentPaper(e, paperId, studentCleanKey) {
+            e.preventDefault();
+            const marks = document.getElementById(`marks-${paperId}-${studentCleanKey}`).value;
+            const remarks = document.getElementById(`remarks-${paperId}-${studentCleanKey}`).value;
+            getDatabase().ref(`classroom/${courseKey}/papers/${paperId}/submissions/${studentCleanKey}`).update({ 
+                evaluated: true, 
+                marks: marks, 
+                remarks: remarks, 
+                gradedAt: new Date().toISOString() 
+            });
+        }
+
+        function renderRecordings(rec) {
+            const list = document.getElementById('recordings-list');
+            if (!Object.keys(rec).length) { list.innerHTML = '<p class="text-slate-600 italic">No video lessons archived yet.</p>'; return; }
+            list.innerHTML = '';
+            Object.entries(rec).forEach(([key, r]) => {
+                list.innerHTML += `<div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center"><div><span class="font-bold text-purple-400">[${r.targetMonth}]</span> <span class="text-slate-300">${r.title}</span></div><button onclick="deleteData('recordings','${key}')" class="text-rose-400 text-xs font-bold cursor-pointer">🗑</button></div>`;
+            });
+        }
+
+        function renderAnnouncements(ann) {
+            const list = document.getElementById('announcements-list');
+            if (!Object.keys(ann).length) { list.innerHTML = '<p class="text-slate-600 italic">No notifications logged.</p>'; return; }
+            list.innerHTML = '';
+            Object.entries(ann).forEach(([key, a]) => {
+                list.innerHTML += `<div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-start"><div><span class="font-bold text-amber-400 text-xs">📢 ${a.title} (${a.severity})</span><p class="text-slate-400 text-[11px] mt-0.5">${a.message}</p></div><button onclick="deleteData('announcements','${key}')" class="text-rose-400 text-xs font-bold cursor-pointer ml-2">🗑</button></div>`;
+            });
+        }
+
+        function renderTimetable(tt) {
+            const list = document.getElementById('timetable-list');
+            if (!Object.keys(tt).length) { list.innerHTML = '<p class="text-slate-600 italic">Timetable registry empty.</p>'; return; }
+            list.innerHTML = '';
+            Object.entries(tt).forEach(([key, t]) => {
+                list.innerHTML += `<div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center"><div><span class="font-bold text-blue-400">[${t.day} @ ${t.time}]</span> <span class="text-slate-300">${t.topic}</span></div><button onclick="deleteData('timetable','${key}')" class="text-rose-400 text-xs font-bold cursor-pointer">🗑</button></div>`;
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.className = "tab-btn bg-slate-900 text-slate-400 border border-slate-800 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all";
+            });
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const colors = { zoom: 'bg-cyan-500 text-slate-950', pdf: 'bg-emerald-500 text-slate-950', written: 'bg-rose-500 text-white', recordings: 'bg-purple-500 text-white', announcements: 'bg-amber-500 text-slate-950', timetable: 'bg-blue-500 text-white' };
+            document.getElementById(`btn-${tabId}`).className = `tab-btn ${colors[tabId]} text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all`;
+        }
+
+        function toggleStudentPreview(status) {
+            const mainEl = document.getElementById('main-teacher-panel');
+            const container = document.getElementById('student-preview-container');
+
+            if(status) {
+                mainEl.classList.add('hidden');
+                container.classList.remove('hidden');
+                container.classList.add('active');
+                
+                let simulatedStructure = `
+                <nav class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex justify-between items-center mt-2 mx-6 rounded-xl">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🎓</span>
+                        <span class="text-sm font-bold text-white" id="nav-student-name">Preview Sandbox Student</span>
+                    </div>
+                    <span class="text-[10px] bg-cyan-500/10 text-cyan-400 px-2 py-1 rounded" id="nav-student-course">${teacherCourse}</span>
+                </nav>
+                <main class="container mx-auto px-6 py-6 space-y-6">
+                    <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+                        <button id="st-btn-zoom" onclick="switchStudentTab('zoom')" class="st-tab-btn bg-cyan-500 text-slate-950 text-xs font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer">📹 Live Session</button>
+                        <button id="st-btn-pdf" onclick="switchStudentTab('pdf')" class="st-tab-btn bg-slate-950 text-slate-400 text-xs font-semibold px-4 py-2 rounded-xl border border-slate-800/80 transition-all cursor-pointer">📚 Class Materials</button>
+                        <button id="st-btn-papers" onclick="switchStudentTab('papers')" class="st-tab-btn bg-slate-950 text-slate-400 text-xs font-semibold px-4 py-2 rounded-xl border border-slate-800/80 transition-all cursor-pointer">📜 Assignments & Exams</button>
+                        <button id="st-btn-recordings" onclick="switchStudentTab('recordings')" class="st-tab-btn bg-slate-950 text-slate-400 text-xs font-semibold px-4 py-2 rounded-xl border border-slate-800/80 transition-all cursor-pointer">🎬 Video Library</button>
+                        <button id="st-btn-timetable" onclick="switchStudentTab('timetable')" class="st-tab-btn bg-slate-950 text-slate-400 text-xs font-semibold px-4 py-2 rounded-xl border border-slate-800/80 transition-all cursor-pointer">📅 Timetable Schedule</button>
+                    </div>
+
+                    <div id="st-tab-zoom" class="student-tab-section active space-y-4">
+                        <div id="student-zoom" class="space-y-3"></div>
+                    </div>
+
+                    <div id="st-tab-pdf" class="student-tab-section hidden grid sm:grid-cols-3 gap-6">
+                        <div class="bg-slate-900 p-4 border border-slate-800 rounded-xl space-y-3">
+                            <h3 class="text-cyan-400 font-bold text-xs border-b border-slate-800 pb-2">Class Handout Notes</h3>
+                            <div id="student-vault-notes" class="space-y-2"></div>
+                        </div>
+                        <div class="bg-slate-900 p-4 border border-slate-800 rounded-xl space-y-3">
+                            <h3 class="text-amber-400 font-bold text-xs border-b border-slate-800 pb-2">Past Papers Archives</h3>
+                            <div id="student-vault-past" class="space-y-2"></div>
+                        </div>
+                        <div class="bg-slate-900 p-4 border border-slate-800 rounded-xl space-y-3">
+                            <h3 class="text-emerald-400 font-bold text-xs border-b border-slate-800 pb-2">Model Evaluation Papers</h3>
+                            <div id="student-vault-model" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <div id="st-tab-papers" class="student-tab-section hidden grid sm:grid-cols-2 gap-6">
+                        <div class="bg-slate-900 p-5 border border-slate-800 rounded-xl space-y-4">
+                            <h3 class="text-rose-400 font-bold text-xs uppercase tracking-wider">Assigned Online Examinations</h3>
+                            <div id="student-papers" class="space-y-4"></div>
+                        </div>
+                        <div class="bg-slate-900 p-5 border border-slate-800 rounded-xl space-y-4">
+                            <h3 class="text-emerald-400 font-bold text-xs uppercase tracking-wider">Your Graded Script Feedback</h3>
+                            <div id="student-graded-feedback" class="space-y-3 text-xs text-slate-500 italic">No scores released yet.</div>
+                        </div>
+                    </div>
+
+                    <div id="st-tab-recordings" class="student-tab-section hidden grid sm:grid-cols-3 gap-4" id="student-recordings-list-wrapper">
+                    </div>
+
+                    <div id="st-tab-timetable" class="student-tab-section hidden space-y-4">
+                        <div class="bg-slate-900 p-5 border border-slate-800 rounded-xl space-y-4">
+                            <h3 class="text-blue-400 font-bold text-xs uppercase tracking-wider">Active Calendar & Class Timetable</h3>
+                            <div id="student-timetable" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </main>`;
+                
+                document.getElementById('student-preview-target').innerHTML = simulatedStructure;
+                setupSandboxClickHandlers();
+                injectStudentSandboxData(cachedSandboxData);
+            } else {
+                container.classList.add('hidden');
+                container.classList.remove('active');
+                document.getElementById('student-critical-alert-ticker').classList.add('hidden');
+                mainEl.classList.remove('hidden');
+            }
+        }
+
+        function setupSandboxClickHandlers() {
+            const targetArea = document.getElementById('student-preview-target');
+            window.switchStudentTab = function(tabId) {
+                targetArea.querySelectorAll('.student-tab-section').forEach(s => { s.classList.add('hidden'); s.classList.remove('active'); });
+                targetArea.querySelectorAll('.st-tab-btn').forEach(b => {
+                    b.className = "st-tab-btn bg-slate-950 text-slate-400 text-xs font-semibold px-4 py-2 rounded-xl border border-slate-800/80 hover:bg-slate-800 transition-all cursor-pointer";
+                });
+
+                const activeTab = targetArea.querySelector(`#st-tab-${tabId}`);
+                if (activeTab) { activeTab.classList.remove('hidden'); activeTab.classList.add('active'); }
+                
+                const activeColorMap = { zoom: 'bg-cyan-500 text-slate-950', pdf: 'bg-emerald-500 text-slate-950', papers: 'bg-rose-500 text-white', recordings: 'bg-purple-500 text-white', timetable: 'bg-blue-500 text-white' };
+                const activeBtn = targetArea.querySelector(`#st-btn-${tabId}`);
+                if (activeBtn) activeBtn.className = `st-tab-btn ${activeColorMap[tabId]} text-xs font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer`;
+            };
+        }
+
+        function injectStudentSandboxData(data) {
+            if(!document.getElementById('student-preview-container').classList.contains('active')) return;
+            const targetArea = document.getElementById('student-preview-target');
+            
+            const ticker = document.getElementById('student-critical-alert-ticker');
+            const urgentNotices = Object.values(data.announcements || {}).filter(a => a.severity === 'Urgent/Critical');
+            if(urgentNotices.length > 0) {
+                ticker.classList.remove('hidden');
+                ticker.innerHTML = '';
+                urgentNotices.forEach(notice => {
+                    ticker.innerHTML += `
+                    <div class="bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl text-xs text-rose-300 animate-pulse flex items-start gap-2 mb-2">
+                        <span class="font-bold">🚨 CRITICAL ALERT:</span>
+                        <div><strong class="text-white">${notice.title}:</strong> ${notice.message}</div>
+                    </div>`;
+                });
+            } else {
+                ticker.classList.add('hidden');
+            }
+
+            const zDiv = targetArea.querySelector('#student-zoom');
+            if (zDiv) {
+                const zItems = Object.values(data.zoom || {});
+                if(!zItems.length) zDiv.innerHTML = '<div class="p-4 text-center text-slate-500 italic border border-dashed border-slate-800 rounded-xl text-xs">No active lecture sessions broadcasted. Check schedule.</div>';
+                else {
+                    zDiv.innerHTML = '';
+                    zItems.forEach(z => { zDiv.innerHTML += `<div class="bg-slate-900 border border-cyan-500/20 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs"><div><h4 class="font-bold text-slate-200 text-sm">${z.topic}</h4><p class="text-[11px] text-slate-400 mt-0.5">📅 Live at: ${new Date(z.dateTime).toLocaleString()}</p></div><a href="${z.link}" target="_blank" class="bg-cyan-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs tracking-wide">✨ Join Stream Now</a></div>`; });
+                }
+            }
+
+            const notesDiv = targetArea.querySelector('#student-vault-notes');
+            const pastDiv = targetArea.querySelector('#student-vault-past');
+            const modelDiv = targetArea.querySelector('#student-vault-model');
+            if(notesDiv && pastDiv && modelDiv) {
+                notesDiv.innerHTML = pastDiv.innerHTML = modelDiv.innerHTML = '<p class="text-[11px] text-slate-600 italic">Empty Asset Log</p>';
+                Object.values(data.pdf || {}).forEach(p => {
+                    const block = `
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80 flex justify-between items-center gap-2">
+                        <span class="truncate text-slate-300 text-[11px] font-medium">${p.title}</span>
+                        <button onclick="downloadFile('${p.fileData}', '${p.filename}')" class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold px-2 py-1 rounded text-[10px] hover:bg-emerald-500 hover:text-slate-950 transition-all cursor-pointer">📥 Download</button>
+                    </div>`;
+                    if(p.category === 'Notes') { if(notesDiv.innerHTML.includes('Empty')) notesDiv.innerHTML = ''; notesDiv.innerHTML += block; }
+                    if(p.category === 'PastPapers') { if(pastDiv.innerHTML.includes('Empty')) pastDiv.innerHTML = ''; pastDiv.innerHTML += block; }
+                    if(p.category === 'ModelPapers') { if(modelDiv.innerHTML.includes('Empty')) modelDiv.innerHTML = ''; modelDiv.innerHTML += block; }
+                });
+            }
+
+            const pDiv = targetArea.querySelector('#student-papers');
+            const feedbackDiv = targetArea.querySelector('#student-graded-feedback');
+            if(pDiv) {
+                const entries = Object.entries(data.papers || {});
+                if(!entries.length) {
+                    pDiv.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-6">No online examinations assigned profile yet.</p>';
+                } else {
+                    pDiv.innerHTML = '';
+                    let feedbackHtml = '';
+                    
+                    entries.forEach(([paperId, p]) => {
+                        let hasSubmitted = p.submissions && p.submissions['sandbox_preview_student'];
+                        let subDetails = hasSubmitted ? p.submissions['sandbox_preview_student'] : null;
+
+                        let actionWidget = '';
+                        if(hasSubmitted) {
+                            actionWidget = `
+                            <div class="text-[11px] bg-slate-950 text-cyan-400 p-2 rounded-lg border border-cyan-500/10 italic flex justify-between items-center">
+                                <span>Status: Answer sheet loaded successfully ✓</span>
+                                <button onclick="downloadFile('${subDetails.fileData}', '${subDetails.filename}')" class="text-slate-400 underline hover:text-white text-[10px]">View Upload</button>
+                            </div>`;
+                            
+                            if(subDetails.evaluated) {
+                                feedbackHtml += `
+                                <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl space-y-1.5">
+                                    <div class="flex justify-between font-bold"><span class="text-slate-300">${p.title}</span><span class="text-emerald-400">${subDetails.marks}%</span></div>
+                                    <p class="text-[11px] text-slate-400">Teacher Remarks: "${subDetails.remarks}"</p>
+                                </div>`;
+                            }
+                        } else {
+                            actionWidget = `
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-2">
+                                <p class="text-[10px] text-slate-400 italic">Submit your written script here (PDF/Image):</p>
+                                <input type="file" id="sub-file-${paperId}" accept=".pdf,image/*" class="w-full text-[11px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:bg-slate-800 file:text-slate-300 rounded">
+                                <button onclick="submitStudentScriptSimulated('${paperId}')" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-1 rounded text-[11px] transition-colors cursor-pointer">📤 Upload Completed Script</button>
+                            </div>`;
+                        }
+
+                        pDiv.innerHTML += `
+                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-bold text-slate-200 text-xs">${p.title}</h4>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">⏱️ Deadline: ${new Date(p.deadline).toLocaleString()}</p>
+                                </div>
+                                <button onclick="downloadFile('${p.fileData}', '${p.filename}')" class="bg-rose-500/10 hover:bg-rose-500 border border-rose-500/20 text-rose-400 hover:text-slate-950 font-bold px-2.5 py-1.5 rounded-lg text-[11px] transition-all cursor-pointer">📥 Get Question Paper</button>
+                            </div>
+                            ${actionWidget}
+                        </div>`;
+                    });
+                    
+                    if(feedbackHtml !== '') feedbackDiv.innerHTML = feedbackHtml;
+                    else feedbackDiv.innerHTML = '<p class="text-xs text-slate-500 italic">No scores released yet.</p>';
+                }
+            }
+
+            const rList = targetArea.querySelector('#st-tab-recordings');
+            if(rList) {
+                const recs = Object.values(data.recordings || {});
+                if(!recs.length) rList.innerHTML = '<div class="p-6 text-center text-slate-500 italic border border-dashed border-slate-800 rounded-xl text-xs sm:col-span-3">No video lessons posted under selected track block.</div>';
+                else {
+                    rList.innerHTML = '';
+                    recs.forEach(rec => { rList.innerHTML += `<div class="bg-slate-900 border border-slate-800/80 p-4 rounded-xl flex flex-col justify-between space-y-3 text-xs"><div><div class="flex justify-between items-start"><span class="bg-purple-500/10 text-purple-400 text-[9px] font-bold px-2 py-0.5 rounded border border-purple-500/10">${rec.platform}</span><span class="text-slate-500 text-[10px]">${rec.uploadDate}</span></div><h4 class="font-bold text-slate-200 mt-2 text-xs">${rec.title}</h4><p class="text-[10px] text-slate-400">Month Track: ${rec.targetMonth}</p></div><a href="${rec.url}" target="_blank" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-800 text-purple-400 text-[11px] font-bold py-2 rounded-lg text-center tracking-wide block">🎬 Launch Video Player</a></div>`; });
+                }
+            }
+            
+            const tDiv = targetArea.querySelector('#student-timetable');
+            if(tDiv) {
+                const items = Object.values(data.timetable || {});
+                if(!items.length) {
+                    tDiv.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-4">No schedule entries logged inside timetable registry.</p>';
+                } else {
+                    tDiv.innerHTML = '';
+                    items.forEach(t => { 
+                        tDiv.innerHTML += `
+                        <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-blue-500/10 text-blue-400 font-bold px-2.5 py-1 rounded border border-blue-500/10">🗓️ ${t.day}</span>
+                                <span class="text-slate-200 font-semibold text-sm">${t.topic}</span>
+                            </div>
+                            <span class="text-slate-400 font-medium bg-slate-900 border border-slate-800/60 px-3 py-1 rounded-lg">${t.time}</span>
+                        </div>`; 
+                    });
+                }
+            }
+        }
+
+        function submitStudentScriptSimulated(paperId) {
+            const fileEl = document.getElementById(`sub-file-${paperId}`);
+            const file = fileEl ? fileEl.files[0] : null;
+            if(!file) { alert("Please select an answer file before transmitting execution!"); return; }
+            
+            const r = new FileReader();
+            r.onload = function(evt) {
+                getDatabase().ref(`classroom/${courseKey}/papers/${paperId}/submissions/sandbox_preview_student`).set({
+                    studentName: "Anushka Pramidu (Sandbox Student)",
+                    filename: file.name,
+                    fileData: evt.target.result,
+                    submittedAt: new Date().toISOString(),
+                    evaluated: false
+                }, (err) => {
+                    if(!err) {
+                        alert("✓ Simulated Answer sheet uploaded to database! Exit preview or check submissions portal underneath 'Exam Papers & Marking' tab.");
+                    }
+                });
+            };
+            r.readAsDataURL(file);
+        }
+
+        function downloadFile(base64, filename) { const a = document.createElement('a'); a.href = base64; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+        function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+    </script>
+</body>
+</html>

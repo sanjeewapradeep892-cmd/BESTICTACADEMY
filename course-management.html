@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEST ICT ACADEMY - Course & Revenue Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col" onload="initCourseManagement()">
+
+    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">📘</span>
+            <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">BEST ICT ACADEMY</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-xs text-amber-400 font-bold uppercase tracking-wider">📚 Course & Analytics Manager</span>
+            <a href="admin.html" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition-colors">← Back to Admin Panel</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-8 flex-grow space-y-8">
+        
+        <div class="flex border-b border-slate-800 gap-2">
+            <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-emerald-500 text-emerald-400 cursor-pointer transition-all">
+                📊 Revenue Analytics
+            </button>
+            <button onclick="switchTab('crud')" id="tab-btn-crud" class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-slate-200 cursor-pointer transition-all">
+                🛠️ Manage All Courses
+            </button>
+        </div>
+
+        <section id="section-analytics" class="space-y-6">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl grid md:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Select Analytics Target Month</label>
+                    <input type="month" id="analytics-month" onchange="runAnalytics()" class="bg-slate-950 border border-slate-800 text-xs text-slate-300 p-2.5 rounded-xl outline-none focus:border-emerald-500 w-full">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Filter By Specific Course</label>
+                    <select id="analytics-course" onchange="runAnalytics()" class="bg-slate-950 border border-slate-800 text-xs text-slate-300 p-2.5 rounded-xl outline-none focus:border-emerald-500 w-full">
+                        <option value="ALL">-- View All System Courses Together --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-center">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Approved Active Enrollments</p>
+                    <h3 id="stat-m-count" class="text-4xl font-black text-cyan-400 mt-2">0</h3>
+                    <p class="text-[10px] text-slate-500 mt-1">Based on student records approved for the selected parameters.</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-center">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Total Monthly System Revenue</p>
+                    <h3 id="stat-m-revenue" class="text-4xl font-black text-emerald-400 mt-2">LKR 0.00</h3>
+                    <p class="text-[10px] text-slate-500 mt-1">Calculated using live monthly system fees set per active course block.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-crud" class="hidden grid lg:grid-cols-3 gap-8">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 h-fit">
+                <div class="border-b border-slate-800 pb-2">
+                    <h2 id="form-title" class="text-sm font-bold text-emerald-400 uppercase tracking-wider">➕ Add New Course Structure</h2>
+                    <p class="text-[10px] text-slate-500 mt-0.5">Inject or edit operational system packages within LMS variables.</p>
+                </div>
+                <input type="hidden" id="edit-course-id">
+                <div class="space-y-1.5">
+                    <label class="text-[11px] text-slate-400 font-medium">Exact Course Name Description</label>
+                    <input type="text" id="course-name-input" placeholder="e.g. A/L ICT Comprehensive" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-lg p-2.5 text-xs text-white outline-none transition-colors">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] text-slate-400 font-medium">Monthly Fee Rate Amount (LKR)</label>
+                    <input type="number" id="course-fee-input" placeholder="e.g. 5000" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-lg p-2.5 text-xs text-white outline-none transition-colors">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="saveCourseData()" id="btn-save-course" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2 rounded-lg text-xs transition-colors cursor-pointer">
+                        Save Course Package
+                    </button>
+                    <button onclick="resetCourseForm()" id="btn-cancel-edit" class="hidden w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-lg text-xs transition-colors cursor-pointer">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-white">Live System Registry Logs</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 font-semibold">
+                                    <th class="p-3">Course Key Descriptor</th>
+                                    <th class="p-3">Standard Monthly Fee</th>
+                                    <th class="p-3 text-right">Administrative Execution</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-lms-courses" class="divide-y divide-slate-800/50">
+                                <tr><td colspan="3" class="p-6 text-center text-slate-600 italic">Loading active courses...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Live Portal Component Render Preview</h2>
+                    <div id="course-preview-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        const getDatabase = () => typeof db !== 'undefined' ? db : firebase.database();
+        let lmsCourses = [];
+        let allEnrollments = [];
+
+        function initCourseManagement() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('analytics-month').value = `${year}-${month}`;
+            
+            startCoreRealtimeListeners();
+        }
+
+        function startCoreRealtimeListeners() {
+            // 1. Сජීවීව Courses කියවීම
+            getDatabase().ref('lms_courses').on('value', (snapshot) => {
+                lmsCourses = [];
+                snapshot.forEach((child) => {
+                    lmsCourses.push({
+                        key: child.key,
+                        ...child.val()
+                    });
+                });
+                renderCoursesTable();
+                renderCoursePreview();
+                updateAnalyticsDropdown();
+                runAnalytics();
+            });
+
+            // 2. සජීවීව Enrollments කියවීම
+            getDatabase().ref('enrollments').on('value', (snapshot) => {
+                allEnrollments = [];
+                snapshot.forEach((courseSnap) => {
+                    courseSnap.forEach((studentSnap) => {
+                        allEnrollments.push({
+                            courseKey: courseSnap.key,
+                            studentKey: studentSnap.key,
+                            ...studentSnap.val()
+                        });
+                    });
+                });
+                runAnalytics();
+            });
+        }
+
+        // Live Registry Logs Table එකට දත්ත render කිරීම
+        function renderCoursesTable() {
+            const table = document.getElementById('table-lms-courses');
+            table.innerHTML = '';
+
+            if (lmsCourses.length === 0) {
+                table.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-600 italic">No configuration entries discovered in database framework.</td></tr>`;
+                return;
+            }
+
+            lmsCourses.forEach((course) => {
+                table.innerHTML += `
+                <tr class="text-slate-300 hover:bg-slate-950/40 transition-colors">
+                    <td class="p-3 font-semibold text-white">${course.name}</td>
+                    <td class="p-3 font-mono text-emerald-400">Rs. ${parseFloat(course.fee).toLocaleString('.00')}</td>
+                    <td class="p-3 text-right">
+                        <div class="flex justify-end gap-1.5">
+                            <button onclick="startEditCourse('${course.key}', '${course.name.replace(/'/g, "\\'")}', ${course.fee})" class="bg-cyan-500/10 hover:bg-cyan-600 border border-cyan-500/20 text-cyan-400 hover:text-slate-950 font-bold px-2.5 py-1 rounded text-[11px] transition-all cursor-pointer">✏️ Edit</button>
+                            <button onclick="deleteCourse('${course.key}', '${course.name.replace(/'/g, "\\'")}')" class="bg-rose-500/10 hover:bg-rose-600 border border-rose-500/20 text-rose-400 hover:text-white font-bold px-2.5 py-1 rounded text-[11px] transition-all cursor-pointer">🗑️ Delete</button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        // Student View Preview කාඩ්පත් ඇඳීම
+        function renderCoursePreview() {
+            const container = document.getElementById('course-preview-container');
+            container.innerHTML = '';
+
+            lmsCourses.forEach((c) => {
+                container.innerHTML += `
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between transition-all hover:border-slate-700">
+                    <div>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded">Active Block</span>
+                        <h3 class="font-bold text-white mt-3 text-sm">${c.name}</h3>
+                        <p class="text-slate-500 text-xs mt-1">Simulated administrative system package container logic.</p>
+                    </div>
+                    <div class="flex justify-between items-center mt-5 border-t border-slate-800/60 pt-3">
+                        <span class="text-emerald-400 font-bold text-sm">Rs. ${parseFloat(c.fee).toLocaleString()} <span class="text-slate-600 font-normal text-[11px]">/mo</span></span>
+                        <span class="text-xs text-slate-500 italic">Enrollment Enabled ✓</span>
+                    </div>
+                </div>`;
+            });
+        }
+
+        // Analysis Dropdown එක සජීවීව යාවත්කාලීන කිරීම
+        function updateAnalyticsDropdown() {
+            const select = document.getElementById('analytics-course');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="ALL">-- View All System Courses Together --</option>';
+            lmsCourses.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.name;
+                opt.textContent = c.name;
+                select.appendChild(opt);
+            });
+
+            if (lmsCourses.map(c => c.name).includes(currentValue)) {
+                select.value = currentValue;
+            }
+        }
+
+        // 📊 ආදායම සහ සිසුන් ගණන auto-calculate කිරීමේ එන්ජිම
+        function runAnalytics() {
+            const targetMonth = document.getElementById('analytics-month').value;
+            const targetCourse = document.getElementById('analytics-course').value;
+
+            let enrolledCount = 0;
+            let revenueSum = 0;
+
+            allEnrollments.forEach((record) => {
+                if (!record.enrolledAt || record.status !== 'Approved') return;
+                
+                const recordMonth = record.enrolledAt.substring(0, 7);
+                if (recordMonth !== targetMonth) return;
+
+                if (targetCourse !== 'ALL' && record.course !== targetCourse) return;
+
+                enrolledCount++;
+
+                const mappedCourse = lmsCourses.find(c => c.name === record.course);
+                const appliedFee = mappedCourse ? parseFloat(mappedCourse.fee) : 0;
+                revenueSum += appliedFee;
+            });
+
+            document.getElementById('stat-m-count').textContent = enrolledCount;
+            document.getElementById('stat-m-revenue').textContent = 'LKR ' + revenueSum.toLocaleString('.2f', { minimumFractionDigits: 2 });
+        }
+
+        // 🛠️ CRUD ශ්‍රිතයන් (Add / Edit / Update)
+        function saveCourseData() {
+            const name = document.getElementById('course-name-input').value.trim();
+            const fee = document.getElementById('course-fee-input').value.trim();
+            const editId = document.getElementById('edit-course-id').value;
+
+            if (!name || !fee) {
+                alert('⚠️ Please complete all required configuration matrix parameters!');
+                return;
+            }
+
+            const payload = { name: name, fee: parseFloat(fee) };
+
+            if (editId) {
+                getDatabase().ref(`lms_courses/${editId}`).update(payload, (err) => {
+                    if (!err) {
+                        resetCourseForm();
+                    } else {
+                        alert('System compilation write fault: ' + err.message);
+                    }
+                });
+            } else {
+                getDatabase().ref('lms_courses').push(payload, (err) => {
+                    if (!err) {
+                        resetCourseForm();
+                    } else {
+                        alert('System compilation push fault: ' + err.message);
+                    }
+                });
+            }
+        }
+
+        function startEditCourse(id, name, fee) {
+            document.getElementById('edit-course-id').value = id;
+            document.getElementById('course-name-input').value = name;
+            document.getElementById('course-fee-input').value = fee;
+
+            document.getElementById('form-title').textContent = "✏️ Modify Operational Parameters";
+            document.getElementById('btn-save-course').textContent = "Apply Modified Specifications";
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+        }
+
+        function resetCourseForm() {
+            document.getElementById('edit-course-id').value = '';
+            document.getElementById('course-name-input').value = '';
+            document.getElementById('course-fee-input').value = '';
+
+            document.getElementById('form-title').textContent = "➕ Add New Course Structure";
+            document.getElementById('btn-save-course').textContent = "Save Course Package";
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+        }
+
+        function deleteCourse(id, name) {
+            if (confirm(`⚠️ CRITICAL WARNING!\nAre you completely sure you want to permanently delete "${name}" from system indexes?`)) {
+                getDatabase().ref(`lms_courses/${id}`).remove();
+            }
+        }
+
+        function switchTab(target) {
+            document.getElementById('section-analytics').classList.toggle('hidden', target !== 'analytics');
+            document.getElementById('section-crud').classList.toggle('hidden', target !== 'crud');
+
+            document.getElementById('tab-btn-analytics').className = target === 'analytics'
+                ? "px-4 py-2 text-xs font-bold uppercase border-b-2 border-emerald-500 text-emerald-400 cursor-pointer transition-all"
+                : "px-4 py-2 text-xs font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-slate-200 cursor-pointer transition-all";
+
+            document.getElementById('tab-btn-crud').className = target === 'crud'
+                ? "px-4 py-2 text-xs font-bold uppercase border-b-2 border-emerald-500 text-emerald-400 cursor-pointer transition-all"
+                : "px-4 py-2 text-xs font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-slate-200 cursor-pointer transition-all";
+        }
+    </script>
+</body>
+</html>

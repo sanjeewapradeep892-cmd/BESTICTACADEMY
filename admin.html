@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEST ICT ACADEMY - Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col" onload="initAdmin()">
+
+    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">📘</span>
+            <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">BEST ICT ACADEMY</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-xs text-rose-400 font-bold uppercase tracking-wider">🔐 Admin Panel</span>
+            <button onclick="adminLogout()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition-colors cursor-pointer">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-8 flex-grow space-y-8">
+
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center border-b border-slate-800 pb-4 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Central Admin Panel</h1>
+                <p class="text-xs text-slate-400 mt-0.5">Approve student enrollments, manage teacher accounts.</p>
+                
+                <!-- Navigation Shortcuts Panel -->
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <a href="user-management.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-cyan-500/10 cursor-pointer">
+                        👥 Manage Users & Credentials
+                    </a>
+                    <a href="course-management.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-emerald-500/10 cursor-pointer">
+                        📚 Manage Courses & Analytics
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3 bg-slate-900 p-3 rounded-xl border border-slate-800">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Select Month</label>
+                    <input type="month" id="filter-month" onchange="filterData()" class="bg-slate-950 border border-slate-800 text-xs text-slate-300 px-2 py-1 rounded outline-none focus:border-emerald-500">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Select Course</label>
+                    <select id="filter-course" onchange="filterData()" class="bg-slate-950 border border-slate-800 text-xs text-slate-300 px-2 py-1 rounded outline-none focus:border-emerald-500 max-w-[200px]">
+                        <option value="ALL">-- All Courses --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center">
+                <p id="stat-students" class="text-2xl font-bold text-emerald-400">-</p>
+                <p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Registered Students (Monthly)</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center">
+                <p id="stat-pending" class="text-2xl font-bold text-amber-400">-</p>
+                <p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Pending Approvals (Monthly)</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center">
+                <p id="stat-teachers" class="text-2xl font-bold text-cyan-400">-</p>
+                <p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Active Teachers</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center">
+                <p id="stat-enrollments" class="text-2xl font-bold text-purple-400">-</p>
+                <p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Total Enrollments (Monthly)</p>
+            </div>
+        </div>
+
+        <section class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">💳 Student Enrollment Approvals</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 font-semibold">
+                            <th class="p-3">Student & Message</th>
+                            <th class="p-3">Course & Date</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-payments" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="4" class="p-6 text-center text-slate-600 italic">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+            <h2 class="text-sm font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">👨‍🏫 Teacher Registrations</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 font-semibold">
+                            <th class="p-3">Teacher</th>
+                            <th class="p-3">Assigned Course</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-teachers" class="divide-y divide-slate-800/50">
+                        <tr><td colspan="4" class="p-6 text-center text-slate-600 italic">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bank Slip Modal Viewport -->
+    <div id="slip-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 relative shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-white">Payment Slip Preview</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">&times;</button>
+            </div>
+            <div class="flex justify-center bg-slate-950 p-2 rounded-xl border border-slate-800">
+                <img id="modal-img" src="" alt="Bank Slip" class="max-h-[400px] object-contain rounded-lg">
+            </div>
+            <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded-lg font-semibold transition-colors cursor-pointer">Close Preview</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        const getDatabase = () => typeof db !== 'undefined' ? db : firebase.database();
+
+        let allEnrollments = [];
+        let allTeachers = [];
+        let detectedCourses = new Set();
+
+        function adminLogout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function initAdmin() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('filter-month').value = `${year}-${month}`;
+
+            startRealtimeListeners();
+        }
+
+        function startRealtimeListeners() {
+            // Load courses catalog dynamically first to configure options map
+            getDatabase().ref('lms_courses').on('value', (courseCatalogSnap) => {
+                detectedCourses.clear();
+                courseCatalogSnap.forEach((c) => {
+                    detectedCourses.add(c.val().name);
+                });
+                updateCourseDropdown();
+                filterData();
+            });
+
+            // Listen into standard enrollment submissions data node
+            getDatabase().ref('enrollments').on('value', (snapshot) => {
+                allEnrollments = [];
+                snapshot.forEach((courseSnap) => {
+                    courseSnap.forEach((studentSnap) => {
+                        allEnrollments.push({
+                            courseKey: courseSnap.key,
+                            studentKey: studentSnap.key,
+                            ...studentSnap.val()
+                        });
+                    });
+                });
+                filterData();
+            });
+
+            // Listen into standard registration applications map
+            getDatabase().ref('users/teachers').on('value', (snapshot) => {
+                allTeachers = [];
+                snapshot.forEach((snap) => {
+                    allTeachers.push({
+                        key: snap.key,
+                        ...snap.val()
+                    });
+                });
+                filterData();
+            });
+        }
+
+        function updateCourseDropdown() {
+            const select = document.getElementById('filter-course');
+            const currentSelected = select.value;
+            
+            select.innerHTML = '<option value="ALL">-- All Courses --</option>';
+            detectedCourses.forEach(courseName => {
+                const opt = document.createElement('option');
+                opt.value = courseName;
+                opt.textContent = courseName;
+                select.appendChild(opt);
+            });
+
+            if([...detectedCourses].includes(currentSelected)) {
+                select.value = currentSelected;
+            }
+        }
+
+        function filterData() {
+            loadStudentEnrollments();
+            loadTeacherRequests();
+        }
+
+        function loadStudentEnrollments() {
+            const table = document.getElementById('table-payments');
+            const targetMonth = document.getElementById('filter-month').value;
+            const targetCourse = document.getElementById('filter-course').value;
+            
+            table.innerHTML = '';
+            let totalCount = 0;
+            let pendingCount = 0;
+            let studentEmails = new Set();
+
+            allEnrollments.forEach((data) => {
+                if (!data.enrolledAt) return;
+                const enrollMonth = data.enrolledAt.substring(0, 7);
+                if (enrollMonth !== targetMonth) return;
+
+                if (targetCourse !== 'ALL' && data.course !== targetCourse) return;
+
+                totalCount++;
+                studentEmails.add(data.email);
+                if (data.status === 'Pending') pendingCount++;
+
+                const formattedDate = new Date(data.enrolledAt).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+
+                table.innerHTML += `
+                <tr class="text-slate-300 hover:bg-slate-950/40 transition-colors">
+                    <td class="p-3 max-w-[250px]">
+                        <p class="font-semibold text-white">${data.name}</p>
+                        <p class="text-slate-500 text-[10px] mb-1">${data.email}</p>
+                        ${data.studentNote 
+                            ? `<p class="bg-slate-950 border border-slate-800 p-1.5 rounded text-[11px] text-slate-400 italic">💬 ${data.studentNote}</p>` 
+                            : `<p class="text-[10px] text-slate-600 italic">No note added</p>`
+                        }
+                    </td>
+                    <td class="p-3">
+                        <p class="text-slate-300 font-medium">${data.course}</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">📅 ${formattedDate}</p>
+                    </td>
+                    <td class="p-3">
+                        <span class="${data.status === 'Approved'
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            : data.status === 'Rejected'
+                            ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        } text-[10px] uppercase font-bold px-2 py-0.5 rounded">${data.status}</span>
+                    </td>
+                    <td class="p-3 text-right">
+                        <div class="flex flex-col sm:flex-row justify-end gap-1.5">
+                            ${data.bankSlip 
+                                ? `<button onclick="openModal('${data.bankSlip}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded text-[11px] cursor-pointer">🖼️ View Slip</button>`
+                                : `<span class="text-[10px] text-slate-600 italic">No Slip</span>`
+                            }
+                            
+                            ${data.status === 'Pending' || data.status === 'Rejected'
+                                ? `<button onclick="approveEnrollment('${data.courseKey}','${data.studentKey}')" class="bg-emerald-500 text-slate-950 font-bold px-2 py-1 rounded text-[11px] hover:bg-emerald-600 cursor-pointer">Approve</button>`
+                                : `<span class="text-emerald-400 text-[11px] font-medium self-center">Active ✓</span>`
+                            }
+
+                            ${data.status === 'Pending'
+                                ? `<button onclick="rejectEnrollment('${data.courseKey}','${data.studentKey}')" class="bg-amber-500/10 hover:bg-amber-500 border border-amber-500/20 text-amber-400 hover:text-slate-950 font-bold px-2 py-1 rounded text-[11px] cursor-pointer">Reject</button>`
+                                : ''
+                            }
+
+                            <button onclick="removeEnrollment('${data.courseKey}','${data.studentKey}','${data.name}')"
+                                class="bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 font-bold px-2 py-1 rounded text-[11px] cursor-pointer">Remove</button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            if (totalCount === 0) {
+                table.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-600 italic">No enrollment requests matching this criteria for this month.</td></tr>`;
+            }
+
+            document.getElementById('stat-students').textContent = studentEmails.size;
+            document.getElementById('stat-pending').textContent = pendingCount;
+            document.getElementById('stat-enrollments').textContent = totalCount;
+        }
+
+        function loadTeacherRequests() {
+            const table = document.getElementById('table-teachers');
+            const targetCourse = document.getElementById('filter-course').value;
+
+            table.innerHTML = '';
+            let displayedTeachersCount = 0;
+
+            allTeachers.forEach((data) => {
+                if (targetCourse !== 'ALL' && data.course !== targetCourse) return;
+                displayedTeachersCount++;
+
+                table.innerHTML += `
+                <tr class="text-slate-300 hover:bg-slate-950/40 transition-colors">
+                    <td class="p-3">
+                        <p class="font-semibold text-white">${data.name}</p>
+                        <p class="text-slate-500 text-[10px]">${data.email}</p>
+                    </td>
+                    <td class="p-3 text-slate-400 font-medium">${data.course || 'Not Assigned'}</td>
+                    <td class="p-3">
+                        <span class="${data.status === 'Approved'
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        } text-[10px] uppercase font-bold px-2 py-0.5 rounded">${data.status}</span>
+                    </td>
+                    <td class="p-3 text-right">
+                        <div class="flex justify-end gap-2">
+                            ${data.status === 'Pending'
+                                ? `<button onclick="approveTeacher('${data.key}')" class="bg-cyan-500 text-slate-950 font-bold px-3 py-1 rounded text-[11px] hover:bg-cyan-600 cursor-pointer">✅ Approve</button>`
+                                : `<span class="text-cyan-400 text-[11px] italic font-medium">Verified ✓</span>`
+                            }
+                            <button onclick="removeTeacher('${data.key}','${data.name}')"
+                                class="bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 font-bold px-2 py-1 rounded text-[11px] cursor-pointer">Remove</button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            if (displayedTeachersCount === 0) {
+                table.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-600 italic">No teachers found for the selected criteria.</td></tr>`;
+            }
+
+            const realActiveCount = allTeachers.filter(t => t.status === 'Approved').length;
+            document.getElementById('stat-teachers').textContent = realActiveCount;
+        }
+
+        function approveEnrollment(courseKey, studentKey) {
+            getDatabase().ref(`enrollments/${courseKey}/${studentKey}`).update({ status: 'Approved' });
+        }
+
+        function rejectEnrollment(courseKey, studentKey) {
+            if (confirm('⚠️ Are you sure you want to REJECT this enrollment request?')) {
+                getDatabase().ref(`enrollments/${courseKey}/${studentKey}`).update({ status: 'Rejected' });
+            }
+        }
+
+        function removeEnrollment(courseKey, studentKey, name) {
+            if (confirm(`⚠️ Completely delete ${name}'s enrollment record?`)) {
+                getDatabase().ref(`enrollments/${courseKey}/${studentKey}`).remove();
+            }
+        }
+
+        function openModal(base64Src) {
+            document.getElementById('modal-img').src = base64Src;
+            document.getElementById('slip-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('slip-modal').classList.add('hidden');
+            document.getElementById('modal-img').src = '';
+        }
+
+        function approveTeacher(key) {
+            getDatabase().ref('users/teachers/' + key).update({ status: 'Approved' });
+        }
+
+        function removeTeacher(key, name) {
+            if (confirm(`⚠️ Remove ${name} from faculty?`)) {
+                getDatabase().ref('users/teachers/' + key).remove();
+            }
+        }
+    </script>
+</body>
+</html>

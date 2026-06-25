@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEST ICT ACADEMY - Digital Learning Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glow { box-shadow: 0 0 60px rgba(16,185,129,0.15); }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        .float { animation: float 4s ease-in-out infinite; }
+        @keyframes ping-slow { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .ping-slow { animation: ping-slow 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen" onload="initIndexPage()">
+
+    <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">📘</span>
+            <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">BEST ICT ACADEMY</span>
+        </div>
+
+        <div class="hidden md:flex gap-8 text-sm font-medium text-slate-300">
+            <a href="index.html" class="text-emerald-400 border-b-2 border-emerald-400 pb-1">Home</a>
+            <a href="#courses" class="hover:text-emerald-400 transition-colors">Courses</a>
+            <a href="#about" class="hover:text-emerald-400 transition-colors">About</a>
+        </div>
+
+        <div class="flex gap-3">
+            <a href="login.html" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white border border-slate-700 hover:border-slate-500 rounded-lg transition-all">Sign Up</a>
+            <a href="login.html" class="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-slate-950 font-bold px-5 py-2 rounded-lg text-sm shadow-lg shadow-emerald-500/20 transition-all">Log In →</a>
+        </div>
+    </nav>
+
+    <header class="container mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-7">
+            <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 ping-slow inline-block"></span>
+                5,000+ Active Students Enrolled
+            </div>
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                Learn ICT &amp; Tech <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">The Smart Way</span>
+            </h1>
+
+            <p class="text-slate-400 text-lg max-w-lg">
+                Premium O/L &amp; A/L ICT courses with live Zoom classes, recorded lessons, exam papers, and expert teachers — all in one place.
+            </p>
+
+            <div class="flex flex-wrap gap-4 pt-2">
+                <a href="login.html" class="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-slate-950 font-bold px-7 py-3 rounded-xl text-sm shadow-lg shadow-emerald-500/20 transition-all">
+                    Get Started Free →
+                </a>
+                <a href="#courses" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-7 py-3 rounded-xl font-medium text-sm transition-all">
+                    Browse Courses
+                </a>
+            </div>
+
+            <div class="flex flex-wrap gap-4 pt-2">
+                <div class="flex items-center gap-1.5 text-xs text-slate-400"><span class="text-emerald-400">✓</span> Live Zoom Classes</div>
+                <div class="flex items-center gap-1.5 text-xs text-slate-400"><span class="text-emerald-400">✓</span> Recorded Lessons</div>
+                <div class="flex items-center gap-1.5 text-xs text-slate-400"><span class="text-emerald-400">✓</span> Exam Papers</div>
+                <div class="flex items-center gap-1.5 text-xs text-slate-400"><span class="text-emerald-400">✓</span> Expert Teachers</div>
+            </div>
+        </div>
+
+        <div class="relative flex justify-center float">
+            <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl blur-3xl opacity-10"></div>
+            <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm space-y-5 glow relative">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                    <span class="font-semibold text-slate-300 text-sm">Academy Overview</span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ping-slow inline-block"></span>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Students</p>
+                        <p class="text-2xl font-bold text-white mt-1">5,240+</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Teachers</p>
+                        <p class="text-2xl font-bold text-white mt-1">12+</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Courses</p>
+                        <p id="index-stat-courses" class="text-2xl font-bold text-emerald-400 mt-1">0</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Live Now</p>
+                        <p class="text-2xl font-bold text-cyan-400 mt-1">3 🔴</p>
+                    </div>
+                </div>
+                <a href="login.html" class="block w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-slate-950 font-bold py-3 rounded-xl text-sm text-center transition-all">
+                    Join Now — It's Free
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section id="about" class="container mx-auto px-6 py-16 border-t border-slate-900">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold">How It Works</h2>
+            <p class="text-slate-400 text-sm mt-2">Simple 4-step process to start learning</p>
+        </div>
+        <div class="grid md:grid-cols-4 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-3 hover:border-emerald-500/30 transition-all">
+                <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-2xl mx-auto">1️⃣</div>
+                <h3 class="font-bold text-white">Register</h3>
+                <p class="text-xs text-slate-400">Create a free student account in seconds</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-3 hover:border-cyan-500/30 transition-all">
+                <div class="w-12 h-12 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl flex items-center justify-center text-2xl mx-auto">2️⃣</div>
+                <h3 class="font-bold text-white">Choose Course</h3>
+                <p class="text-xs text-slate-400">Pick from O/L, A/L or professional courses</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-3 hover:border-purple-500/30 transition-all">
+                <div class="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-2xl mx-auto">3️⃣</div>
+                <h3 class="font-bold text-white">Pay & Enroll</h3>
+                <p class="text-xs text-slate-400">Bank transfer → Admin approves within 24hrs</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-3 hover:border-amber-500/30 transition-all">
+                <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-2xl mx-auto">4️⃣</div>
+                <h3 class="font-bold text-white">Start Learning</h3>
+                <p class="text-xs text-slate-400">Access live classes, notes, recordings & more</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="courses" class="container mx-auto px-6 py-16 border-t border-slate-900">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold">Our Courses</h2>
+            <p class="text-slate-400 text-sm mt-2">Choose your learning path and start today</p>
+        </div>
+
+        <div id="live-index-courses-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div class="sm:col-span-2 lg:col-span-3 xl:col-span-4 text-center py-8">
+                <div class="animate-pulse text-slate-600 text-sm">Loading dynamic class configurations...</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-6 py-16 border-t border-slate-900">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold">Why Choose Us?</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                <span class="text-3xl">📹</span>
+                <h3 class="font-bold text-white">Live Zoom Classes</h3>
+                <p class="text-xs text-slate-400">Real-time interaction with teachers via scheduled Zoom sessions every week.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                <span class="text-3xl">🎬</span>
+                <h3 class="font-bold text-white">Recorded Lessons</h3>
+                <p class="text-xs text-slate-400">Missed a class? Watch recorded sessions anytime from your dashboard.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                <span class="text-3xl">📚</span>
+                <h3 class="font-bold text-white">Study Materials</h3>
+                <p class="text-xs text-slate-400">Notes, past papers and model papers uploaded by your teacher.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                <span class="text-3xl">📜</span>
+                <h3 class="font-bold text-white">Online Exam Papers</h3>
+                <p class="text-xs text-slate-400">Download exam papers and submit answers — all within the platform.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                <span class="text-3xl">📅</span>
+                <h3 class="font-bold text-white">Class Timetable</h3>
+                <p class="text-xs text-slate-400">Always know when your next class is with the live schedule board.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+                <span class="text-3xl">📢</span>
+                <h3 class="font-bold text-white">Instant Announcements</h3>
+                <p class="text-xs text-slate-400">Teachers broadcast important updates directly to your classroom feed.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-6 py-16">
+        <div class="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 rounded-3xl p-12 text-center space-y-6">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-white">Ready to Start Learning?</h2>
+            <p class="text-slate-400 max-w-lg mx-auto text-sm">Join thousands of students already learning with BEST ICT ACADEMY. Register free today.</p>
+            <div class="flex flex-wrap gap-4 justify-center">
+                <a href="login.html" class="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm shadow-lg shadow-emerald-500/20 transition-all">
+                    Create Free Account →
+                </a>
+                <a href="login.html" class="border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-medium px-8 py-3.5 rounded-xl text-sm transition-all">
+                    Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-slate-900 bg-slate-950 text-slate-500 text-xs text-center py-8">
+        <div class="container mx-auto px-6 space-y-2">
+            <div class="flex justify-center gap-2 items-center">
+                <span class="text-lg">📘</span>
+                <span class="font-bold text-slate-400">BEST ICT ACADEMY</span>
+            </div>
+            <p>© 2026 BEST ICT ACADEMY LMS. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        function initIndexPage() {
+            startIndexLiveListeners();
+        }
+
+        function startIndexLiveListeners() {
+            const gridContainer = document.getElementById('live-index-courses-grid');
+            const statCoursesEl = document.getElementById('index-stat-courses');
+
+            // Firebase 'lms_courses' නෝඩයට සජීවීව සවන්දීම (Realtime synchronization)
+            db.ref('lms_courses').on('value', (snapshot) => {
+                gridContainer.innerHTML = '';
+                let totalCoursesCount = 0;
+
+                if (!snapshot.exists()) {
+                    gridContainer.innerHTML = `
+                    <div class="col-span-2 lg:col-span-3 xl:col-span-4 text-center py-14 border border-dashed border-slate-800 rounded-2xl">
+                        <span class="text-3xl block mb-3">🎓</span>
+                        <p class="text-sm text-slate-400 font-medium">No active packages published yet.</p>
+                        <p class="text-xs text-slate-600 mt-1">Please check back soon or contact support.</p>
+                    </div>`;
+                    statCoursesEl.textContent = "0";
+                    return;
+                }
+
+                snapshot.forEach((childSnap) => {
+                    totalCoursesCount++;
+                    const courseData = childSnap.val();
+
+                    // dynamic tag classification based on names
+                    let categoryBadge = "Professional Track";
+                    let borderHoverClass = "hover:border-pink-500/40";
+                    
+                    if(courseData.name.toLowerCase().includes('o/l') || courseData.name.toLowerCase().includes('ol')) {
+                        categoryBadge = "GCE O/L Focus";
+                        borderHoverClass = "hover:border-blue-500/40";
+                    } else if(courseData.name.toLowerCase().includes('a/l') || courseData.name.toLowerCase().includes('al')) {
+                        categoryBadge = "GCE A/L Advanced";
+                        borderHoverClass = "hover:border-purple-500/40";
+                    } else if(courseData.name.toLowerCase().includes('security') || courseData.name.toLowerCase().includes('hacking')) {
+                        categoryBadge = "Cyber Security";
+                        borderHoverClass = "hover:border-cyan-500/40";
+                    }
+
+                    // Append UI Dynamic Grid Card structure
+                    gridContainer.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 ${borderHoverClass} p-5 rounded-2xl flex flex-col justify-between transition-all hover:-translate-y-1">
+                        <div class="space-y-3">
+                            <span class="bg-slate-950 border border-slate-800 text-slate-400 text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded">${categoryBadge}</span>
+                            <h3 class="font-bold text-white text-base leading-snug">${courseData.name}</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed">Full curriculum integration matrix — complete with live session architectures and portal file vaults.</p>
+                            <p class="text-emerald-400 font-bold text-sm">Rs. ${parseFloat(courseData.fee).toLocaleString()} <span class="text-slate-500 font-normal text-xs">/ month</span></p>
+                        </div>
+                        <a href="login.html" class="w-full mt-5 bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 font-semibold py-2 rounded-xl text-xs text-center transition-all block cursor-pointer">Enroll Now</a>
+                    </div>`;
+                });
+
+                // Stats Panel එකට සජීවී ගණන එක් කිරීම
+                statCoursesEl.textContent = `${totalCoursesCount}+`;
+            });
+        }
+    </script>
+</body>
+</html>
